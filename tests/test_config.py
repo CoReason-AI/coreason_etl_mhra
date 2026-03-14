@@ -44,7 +44,7 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     assert manifest.http_backoff_factor == 2.0
 
 
-@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))
+@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))  # type: ignore[misc]
 def test_manifest_with_hypothesis(url: str, dir_path: str) -> None:
     """Verify manifest can take various string inputs for initialization via kwargs."""
     manifest = RegulatoryIngestionManifest(mhra_products_url=url, download_dir=Path(dir_path))
