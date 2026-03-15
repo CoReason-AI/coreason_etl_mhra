@@ -24,6 +24,11 @@ def test_manifest_defaults() -> None:
     assert manifest.download_dir == Path("/data/raw/mhra/")
     assert manifest.http_max_retries == 3
     assert manifest.http_backoff_factor == 0.5
+    assert manifest.pghost == "localhost"
+    assert manifest.pgport == 5432
+    assert manifest.pguser == "postgres"
+    assert manifest.pgpassword.get_secret_value() == "postgres"
+    assert manifest.pgdatabase == "coreason"
 
 
 def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -35,6 +40,11 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("DOWNLOAD_DIR", custom_dir)
     monkeypatch.setenv("HTTP_MAX_RETRIES", "10")
     monkeypatch.setenv("HTTP_BACKOFF_FACTOR", "2.0")
+    monkeypatch.setenv("PGHOST", "db.example.com")
+    monkeypatch.setenv("PGPORT", "5433")
+    monkeypatch.setenv("PGUSER", "admin")
+    monkeypatch.setenv("PGPASSWORD", "secret")
+    monkeypatch.setenv("PGDATABASE", "mhra_db")
 
     manifest = RegulatoryIngestionManifest()
 
@@ -42,9 +52,14 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     assert manifest.download_dir == Path(custom_dir)
     assert manifest.http_max_retries == 10
     assert manifest.http_backoff_factor == 2.0
+    assert manifest.pghost == "db.example.com"
+    assert manifest.pgport == 5433
+    assert manifest.pguser == "admin"
+    assert manifest.pgpassword.get_secret_value() == "secret"
+    assert manifest.pgdatabase == "mhra_db"
 
 
-@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))  # type: ignore[misc]
+@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))
 def test_manifest_with_hypothesis(url: str, dir_path: str) -> None:
     """Verify manifest can take various string inputs for initialization via kwargs."""
     manifest = RegulatoryIngestionManifest(mhra_products_url=url, download_dir=Path(dir_path))
