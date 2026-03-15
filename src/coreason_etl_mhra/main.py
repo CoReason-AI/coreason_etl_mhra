@@ -8,9 +8,34 @@
 #
 # Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
 
+"""
+Main entry point and orchestration logic for the MHRA ETL pipeline.
+"""
+
+from coreason_etl_mhra.config import RegulatoryIngestionManifest
+from coreason_etl_mhra.http_client import create_session
 from coreason_etl_mhra.utils.logger import logger
 
 
-def hello_world() -> str:
-    logger.info("Hello World!")
-    return "Hello World!"
+def run_pipeline() -> None:
+    """
+    Orchestrates the full MHRA pipeline.
+    """
+    logger.info("Starting MHRA ETL pipeline")
+
+    manifest = RegulatoryIngestionManifest()
+
+    try:
+        # Step 1: Initialize dependencies
+        logger.info("Step 1: Initializing configuration and HTTP client...")
+        _ = create_session(manifest)
+
+        logger.info("MHRA ETL pipeline initialized successfully")
+
+    except Exception as e:
+        logger.exception("MHRA ETL pipeline failed", error=str(e))
+        raise
+
+
+if __name__ == "__main__":  # pragma: no cover
+    run_pipeline()
