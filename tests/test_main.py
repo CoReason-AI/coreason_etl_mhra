@@ -15,15 +15,33 @@ import pytest
 from coreason_etl_mhra.main import run_pipeline
 
 
+@patch("coreason_etl_mhra.main.RegulatoryIngestionPipeline")
+@patch("coreason_etl_mhra.main.RegulatoryDownloadTask")
 @patch("coreason_etl_mhra.main.create_session")
-def test_run_pipeline_success(mock_create_session: MagicMock) -> None:
+def test_run_pipeline_success(
+    mock_create_session: MagicMock,
+    mock_download_task: MagicMock,
+    mock_ingestion_pipeline: MagicMock,
+) -> None:
     """Verifies that the main pipeline orchestrates successfully."""
-    mock_create_session.return_value = MagicMock()
+    mock_session = MagicMock()
+    mock_create_session.return_value = mock_session
+
+    mock_task_instance = MagicMock()
+    mock_download_task.return_value = mock_task_instance
+    mock_task_instance.execute.return_value = "/path/to/mock.csv"
+
+    mock_pipeline_instance = MagicMock()
+    mock_ingestion_pipeline.return_value = mock_pipeline_instance
 
     run_pipeline()
 
     # Verify order of execution
     mock_create_session.assert_called_once()
+    mock_download_task.assert_called_once()
+    mock_task_instance.execute.assert_called_once()
+    mock_ingestion_pipeline.assert_called_once()
+    mock_pipeline_instance.run.assert_called_once_with("/path/to/mock.csv")
 
 
 @patch("coreason_etl_mhra.main.create_session")
