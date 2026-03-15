@@ -38,3 +38,13 @@ class RegulatoryIngestionManifest(BaseSettings):
         default=Path("/data/raw/mhra/"),
         description="Local persistent path where raw CSVs are saved before ingestion.",
     )
+
+    http_max_retries: int = Field(
+        default=3,
+        description="Maximum number of retry attempts for the HTTP client.",
+    )
+
+    http_backoff_factor: float = Field(
+        default=0.5,
+        description="Backoff factor for HTTP client retry intervals.",
+    )
