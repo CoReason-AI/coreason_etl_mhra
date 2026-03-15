@@ -8,8 +8,28 @@
 #
 # Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
 
-from coreason_etl_mhra.main import hello_world
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from coreason_etl_mhra.main import run_pipeline
 
 
-def test_hello_world() -> None:
-    assert hello_world() == "Hello World!"
+@patch("coreason_etl_mhra.main.create_session")
+def test_run_pipeline_success(mock_create_session: MagicMock) -> None:
+    """Verifies that the main pipeline orchestrates successfully."""
+    mock_create_session.return_value = MagicMock()
+
+    run_pipeline()
+
+    # Verify order of execution
+    mock_create_session.assert_called_once()
+
+
+@patch("coreason_etl_mhra.main.create_session")
+def test_run_pipeline_failure(mock_create_session: MagicMock) -> None:
+    """Verifies that the main pipeline handles exceptions."""
+    mock_create_session.side_effect = Exception("Config init failed")
+
+    with pytest.raises(Exception, match=r"Config init failed"):
+        run_pipeline()
