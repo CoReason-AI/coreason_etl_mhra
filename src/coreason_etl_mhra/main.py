@@ -14,6 +14,8 @@ Main entry point and orchestration logic for the MHRA ETL pipeline.
 
 from coreason_etl_mhra.config import RegulatoryIngestionManifest
 from coreason_etl_mhra.http_client import create_session
+from coreason_etl_mhra.ingestion.download import RegulatoryDownloadTask
+from coreason_etl_mhra.ingestion.pipeline import RegulatoryIngestionPipeline
 from coreason_etl_mhra.utils.logger import logger
 
 
@@ -28,9 +30,19 @@ def run_pipeline() -> None:
     try:
         # Step 1: Initialize dependencies
         logger.info("Step 1: Initializing configuration and HTTP client...")
-        _ = create_session(manifest)
+        session = create_session(manifest)
 
-        logger.info("MHRA ETL pipeline initialized successfully")
+        # Step 2: Download raw data
+        logger.info("Step 2: Executing download task...")
+        download_task = RegulatoryDownloadTask(session, manifest)
+        file_path = download_task.execute()
+
+        # Step 3: Execute ingestion pipeline
+        logger.info("Step 3: Executing ingestion pipeline...")
+        ingestion_pipeline = RegulatoryIngestionPipeline(manifest)
+        ingestion_pipeline.run(file_path)
+
+        logger.info("MHRA ETL pipeline completed successfully")
 
     except Exception as e:
         logger.exception("MHRA ETL pipeline failed", error=str(e))
