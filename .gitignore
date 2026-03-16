@@ -140,3 +140,4 @@ cython_debug/
 
 # Runtime Logs
 logs/
+src/coreason_etl_mhra/dbt/.user.yml
