@@ -7,7 +7,7 @@ name = "coreason_etl_mhra"
 dynamic = ["version"]
 description = "ETL process integrating UK MHRA regulatory and pharmacovigilance safety data"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 authors = [
     { name = "Akshaya M", email = "akshaya.movvar@coreason.ai" },
 ]
@@ -61,14 +61,14 @@ Documentation = "https://github.com/CoReason-AI/coreason_etl_mhra"
 
 [tool.ruff]
 line-length = 120
-target-version = "py314"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "I", "UP", "SIM", "RUF", "ARG", "C4", "PT", "TCH", "FA", "PIE", "RET", "PERF", "FURB", "LOG", "N", "A", "S"]
 ignore = ["S101", "TC001", "TC002", "TC003", "UP037"]
 
 [tool.mypy]
-python_version = "3.14"
+python_version = "3.12"
 strict = true
 disallow_untyped_defs = true
 warn_unused_ignores = true
