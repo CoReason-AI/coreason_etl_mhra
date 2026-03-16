@@ -89,7 +89,7 @@ class RegulatoryIngestionPipeline:
         DLT resource definition that wraps the file processing generator.
         """
 
-        @dlt.resource(name="mhra_products_raw", write_disposition="merge", primary_key="coreason_id")  # type: ignore[misc]
+        @dlt.resource(name="mhra_products_raw", write_disposition="merge", primary_key="coreason_id")
         def mhra_resource() -> Iterator[dict[str, Any]]:
             yield from self._process_file(file_path)
 
