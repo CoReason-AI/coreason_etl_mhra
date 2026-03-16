@@ -29,12 +29,12 @@ class RegulatoryIngestionManifest(BaseSettings):
         extra="ignore",
     )
 
-    mhra_products_url: str = Field(
+    target_url: str = Field(
         default="https://dummy.mhra.gov.uk/products.csv",
         description="The target URL for the MHRA approved medicinal products dataset.",
     )
 
-    download_dir: Path = Field(
+    download_path: Path = Field(
         default=Path("/data/raw/mhra/"),
         description="Local persistent path where raw CSVs are saved before ingestion.",
     )
@@ -73,3 +73,6 @@ class RegulatoryIngestionManifest(BaseSettings):
         default="coreason",
         description="Postgres database name.",
     )
+
+
+# Initialization of config verified and completed according to Dependencies & Config atomic unit

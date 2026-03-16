@@ -23,8 +23,8 @@ from coreason_etl_mhra.ingestion.download import RegulatoryDownloadTask
 def mock_manifest(tmp_path: Path) -> RegulatoryIngestionManifest:
     """Fixture providing a configured manifest pointing to a temporary directory."""
     return RegulatoryIngestionManifest(
-        mhra_products_url="https://dummy.mhra.gov.uk/data/products.csv",
-        download_dir=tmp_path / "raw" / "mhra",
+        target_url="https://dummy.mhra.gov.uk/data/products.csv",
+        download_path=tmp_path / "raw" / "mhra",
     )
 
 
@@ -53,14 +53,14 @@ def test_successful_download(
 
     # Asserts
     assert downloaded_path.name == "products.csv"
-    assert downloaded_path.parent == mock_manifest.download_dir
+    assert downloaded_path.parent == mock_manifest.download_path
     assert downloaded_path.exists()
 
     with downloaded_path.open("rb") as f:
         content = f.read()
     assert content == b"chunk1,chunk2,chunk3"
 
-    mock_session.get.assert_called_once_with(mock_manifest.mhra_products_url, stream=True)
+    mock_session.get.assert_called_once_with(mock_manifest.target_url, stream=True)
 
 
 def test_download_failure_http_error(
@@ -85,8 +85,8 @@ def test_download_fallback_filename(
 ) -> None:
     """Verify that a default filename is used if the URL path ends without one."""
     manifest = RegulatoryIngestionManifest(
-        mhra_products_url="https://dummy.mhra.gov.uk/",
-        download_dir=tmp_path,
+        target_url="https://dummy.mhra.gov.uk/",
+        download_path=tmp_path,
     )
     task = RegulatoryDownloadTask(session=mock_session, manifest=manifest)
 

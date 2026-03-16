@@ -50,11 +50,11 @@ class RegulatoryDownloadTask:
             requests.exceptions.RequestException: If the HTTP request fails.
             OSError: If there's an issue writing to the filesystem.
         """
-        url = self._manifest.mhra_products_url
-        download_dir = self._manifest.download_dir
+        url = self._manifest.target_url
+        download_path = self._manifest.download_path
 
         # Ensure directory exists
-        download_dir.mkdir(parents=True, exist_ok=True)
+        download_path.mkdir(parents=True, exist_ok=True)
 
         # Extract filename from URL, fallback to default if not present
         parsed_url = urlparse(url)
@@ -62,7 +62,7 @@ class RegulatoryDownloadTask:
         if not filename:
             filename = "mhra_products.csv"
 
-        target_path = download_dir / filename
+        target_path = download_path / filename
 
         logger.info(
             "Starting MHRA download task",
