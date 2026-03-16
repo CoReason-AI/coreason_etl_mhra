@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "coreason_etl_mhra"
+name = "coreason_etl_mhra_products"
 dynamic = ["version"]
 description = "ETL process integrating UK MHRA regulatory and pharmacovigilance safety data"
 readme = "README.md"
@@ -49,7 +49,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/coreason_etl_mhra"]
+packages = ["src/coreason_etl_mhra_products"]
 
 [tool.hatch.version]
 source = "vcs"

@@ -6,7 +6,7 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 """
 HTTP client components for the MHRA ETL pipeline.
@@ -16,7 +16,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
 
 
 def create_session(manifest: RegulatoryIngestionManifest) -> requests.Session:

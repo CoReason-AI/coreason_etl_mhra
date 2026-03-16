@@ -6,7 +6,7 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 """
 Pipeline logic for processing the raw MHRA CSV and yielding it via DLT.
@@ -22,8 +22,8 @@ import dlt
 import polars as pl
 from dlt.destinations import postgres
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
-from coreason_etl_mhra.utils.logger import logger
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.utils.logger import logger
 
 NAMESPACE_COREASON = uuid.UUID("3f8c5c7e-90f1-419b-a010-8b1b51d451a9")
 
