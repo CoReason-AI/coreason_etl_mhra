@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Raw landing zone for MHRA Products"
+    database: "{{ env_var('PGDATABASE', 'coreason') }}"
+    schema: bronze
+    tables:
+      - name: mhra_products_raw
+        description: "Raw JSONB payload containing MHRA approved medicinal products."
