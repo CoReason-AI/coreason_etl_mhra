@@ -6,7 +6,7 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 import uuid
 from pathlib import Path
@@ -14,8 +14,8 @@ from unittest.mock import MagicMock, patch
 
 import polars as pl
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
-from coreason_etl_mhra.ingestion.pipeline import (
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.ingestion.pipeline import (
     NAMESPACE_COREASON,
     RegulatoryIngestionPipeline,
     _generate_uuidv5,
@@ -97,7 +97,7 @@ def test_get_mhra_resource(tmp_path: Path) -> None:
     assert records[0]["raw_data"] == {"Licence Number": "PL 12345/0001", "Product Name": "Aspirin"}
 
 
-@patch("coreason_etl_mhra.ingestion.pipeline.dlt.pipeline")
+@patch("coreason_etl_mhra_products.ingestion.pipeline.dlt.pipeline")
 def test_pipeline_run(mock_dlt_pipeline: MagicMock, tmp_path: Path) -> None:
     """Verifies that the run method orchestrates DLT correctly."""
     manifest = RegulatoryIngestionManifest()

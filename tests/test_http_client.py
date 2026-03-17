@@ -6,13 +6,13 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
-from coreason_etl_mhra.http_client import create_session
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.http_client import create_session
 
 
 def test_create_session_configures_retries() -> None:
@@ -60,3 +60,19 @@ def test_create_session_defaults() -> None:
     assert isinstance(http_adapter.max_retries, Retry)
     assert http_adapter.max_retries.total == 3
     assert http_adapter.max_retries.backoff_factor == 0.5
+
+
+def test_create_session_zero_retries() -> None:
+    """Verify that create_session configures the requests.Session correctly with 0 retries."""
+    manifest = RegulatoryIngestionManifest(
+        http_max_retries=0,
+        http_backoff_factor=0.0,
+    )
+
+    session = create_session(manifest)
+
+    http_adapter = session.get_adapter("http://")
+    assert isinstance(http_adapter, HTTPAdapter)
+    assert isinstance(http_adapter.max_retries, Retry)
+    assert http_adapter.max_retries.total == 0
+    assert http_adapter.max_retries.backoff_factor == 0.0

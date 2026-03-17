@@ -150,7 +150,7 @@ wheels = [
 ]
 
 [[package]]
-name = "coreason-etl-mhra"
+name = "coreason-etl-mhra-products"
 source = { editable = "." }
 dependencies = [
     { name = "dbt-postgres" },
