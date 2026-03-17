@@ -6,7 +6,7 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 """
 Task for downloading the MHRA approved products dataset to local persistent storage.
@@ -18,8 +18,8 @@ from urllib.parse import urlparse
 import requests
 from requests.exceptions import RequestException
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
-from coreason_etl_mhra.utils.logger import logger
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.utils.logger import logger
 
 
 class RegulatoryDownloadTask:

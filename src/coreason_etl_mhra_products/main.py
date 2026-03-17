@@ -6,17 +6,17 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 """
 Main entry point and orchestration logic for the MHRA ETL pipeline.
 """
 
-from coreason_etl_mhra.config import RegulatoryIngestionManifest
-from coreason_etl_mhra.http_client import create_session
-from coreason_etl_mhra.ingestion.download import RegulatoryDownloadTask
-from coreason_etl_mhra.ingestion.pipeline import RegulatoryIngestionPipeline
-from coreason_etl_mhra.utils.logger import logger
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from coreason_etl_mhra_products.http_client import create_session
+from coreason_etl_mhra_products.ingestion.download import RegulatoryDownloadTask
+from coreason_etl_mhra_products.ingestion.pipeline import RegulatoryIngestionPipeline
+from coreason_etl_mhra_products.utils.logger import logger
 
 
 def run_pipeline() -> None:

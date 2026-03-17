@@ -6,18 +6,18 @@
 # For details, see the LICENSE file.
 # Commercial use beyond a 30-day trial requires a separate license.
 #
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from coreason_etl_mhra.main import run_pipeline
+from coreason_etl_mhra_products.main import run_pipeline
 
 
-@patch("coreason_etl_mhra.main.RegulatoryIngestionPipeline")
-@patch("coreason_etl_mhra.main.RegulatoryDownloadTask")
-@patch("coreason_etl_mhra.main.create_session")
+@patch("coreason_etl_mhra_products.main.RegulatoryIngestionPipeline")
+@patch("coreason_etl_mhra_products.main.RegulatoryDownloadTask")
+@patch("coreason_etl_mhra_products.main.create_session")
 def test_run_pipeline_success(
     mock_create_session: MagicMock,
     mock_download_task: MagicMock,
@@ -44,7 +44,7 @@ def test_run_pipeline_success(
     mock_pipeline_instance.run.assert_called_once_with("/path/to/mock.csv")
 
 
-@patch("coreason_etl_mhra.main.create_session")
+@patch("coreason_etl_mhra_products.main.create_session")
 def test_run_pipeline_failure(mock_create_session: MagicMock) -> None:
     """Verifies that the main pipeline handles exceptions."""
     mock_create_session.side_effect = Exception("Config init failed")
