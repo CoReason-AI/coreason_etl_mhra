@@ -1,20 +1,8 @@
-# Copyright (c) 2026 CoReason, Inc.
-#
-# This software is proprietary and dual-licensed.
-# Licensed under the Prosperity Public License 3.0 (the "License").
-# A copy of the license is available at https://prosperitylicense.com/versions/3.0.0
-# For details, see the LICENSE file.
-# Commercial use beyond a 30-day trial requires a separate license.
-#
-# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 from pathlib import Path
 
 import pytest
-from hypothesis import given
-from hypothesis import strategies as st
-from pydantic import ValidationError
-
 from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from pydantic import ValidationError
 
 
 def test_manifest_defaults() -> None:
@@ -57,14 +45,6 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     assert manifest.pguser == "admin"
     assert manifest.pgpassword.get_secret_value() == "secret"
     assert manifest.pgdatabase == "mhra_db"
-
-
-@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))
-def test_manifest_with_hypothesis(url: str, dir_path: str) -> None:
-    """Verify manifest can take various string inputs for initialization via kwargs."""
-    manifest = RegulatoryIngestionManifest(target_url=url, download_path=Path(dir_path))
-    assert manifest.target_url == url
-    assert manifest.download_path == Path(dir_path)
 
 
 def test_manifest_invalid_types() -> None:

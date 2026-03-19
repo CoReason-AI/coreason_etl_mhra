@@ -1,9 +1,0 @@
-{
-  "recommendations": [
-    "charliermarsh.ruff",
-    "ms-python.mypy-type-checker",
-    "tamasfe.even-better-toml",
-    "ms-python.python",
-    "ms-python.vscode-pylance"
-  ]
-}
