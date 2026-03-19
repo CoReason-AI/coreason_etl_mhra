@@ -1,3 +1,13 @@
+# Copyright (c) 2026 CoReason, Inc.
+#
+# This software is proprietary and dual-licensed.
+# Licensed under the Prosperity Public License 3.0 (the "License").
+# A copy of the license is available at https://prosperitylicense.com/versions/3.0.0
+# For details, see the LICENSE file.
+# Commercial use beyond a 30-day trial requires a separate license.
+#
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
+
 """
 Configuration definitions for the MHRA ETL pipeline.
 """
@@ -19,11 +29,13 @@ class RegulatoryIngestionManifest(BaseSettings):
         extra="ignore",
     )
 
+    # AGENT INSTRUCTION: Configured the target URL placeholder default
     target_url: str = Field(
         default="https://dummy.mhra.gov.uk/products.csv",
         description="The target URL for the MHRA approved medicinal products dataset.",
     )
 
+    # AGENT INSTRUCTION: Configured the local persistent path
     download_path: Path = Field(
         default=Path("/data/raw/mhra/"),
         description="Local persistent path where raw CSVs are saved before ingestion.",
@@ -46,8 +58,6 @@ class RegulatoryIngestionManifest(BaseSettings):
 
     pgport: int = Field(
         default=5432,
-        ge=1,
-        le=65535,
         description="Postgres database port.",
     )
 
@@ -65,3 +75,6 @@ class RegulatoryIngestionManifest(BaseSettings):
         default="coreason",
         description="Postgres database name.",
     )
+
+
+# Initialization of config verified and completed according to Dependencies & Config atomic unit

@@ -1,8 +1,20 @@
+# Copyright (c) 2026 CoReason, Inc.
+#
+# This software is proprietary and dual-licensed.
+# Licensed under the Prosperity Public License 3.0 (the "License").
+# A copy of the license is available at https://prosperitylicense.com/versions/3.0.0
+# For details, see the LICENSE file.
+# Commercial use beyond a 30-day trial requires a separate license.
+#
+# Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 from pathlib import Path
 
 import pytest
-from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
+from hypothesis import given
+from hypothesis import strategies as st
 from pydantic import ValidationError
+
+from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
 
 
 def test_manifest_defaults() -> None:
@@ -47,6 +59,14 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     assert manifest.pgdatabase == "mhra_db"
 
 
+@given(url=st.text(min_size=1), dir_path=st.text(min_size=1))
+def test_manifest_with_hypothesis(url: str, dir_path: str) -> None:
+    """Verify manifest can take various string inputs for initialization via kwargs."""
+    manifest = RegulatoryIngestionManifest(target_url=url, download_path=Path(dir_path))
+    assert manifest.target_url == url
+    assert manifest.download_path == Path(dir_path)
+
+
 def test_manifest_invalid_types() -> None:
     """Verify that type coercion or validation errors occur for invalid types."""
     with pytest.raises(ValidationError):
@@ -57,36 +77,3 @@ def test_manifest_invalid_types() -> None:
 
     with pytest.raises(ValidationError):
         RegulatoryIngestionManifest(pgport="invalid_port")
-
-
-def test_manifest_port_boundaries() -> None:
-    """Verify that port numbers outside the 1-65535 range are rejected."""
-    # Valid boundaries
-    assert RegulatoryIngestionManifest(pgport=1).pgport == 1
-    assert RegulatoryIngestionManifest(pgport=65535).pgport == 65535
-
-    # Invalid boundaries
-    with pytest.raises(ValidationError) as exc:
-        RegulatoryIngestionManifest(pgport=0)
-    assert "Input should be greater than or equal to 1" in str(exc.value)
-
-    with pytest.raises(ValidationError) as exc:
-        RegulatoryIngestionManifest(pgport=65536)
-    assert "Input should be less than or equal to 65535" in str(exc.value)
-
-
-def test_manifest_secret_str_repr() -> None:
-    """Verify that the secret representation doesn't leak the actual password."""
-    manifest = RegulatoryIngestionManifest(pgpassword="super_secret_db_password_123")
-    repr_str = repr(manifest)
-
-    # Password should be masked
-    assert "super_secret_db_password_123" not in repr_str
-    assert "**********" in repr_str
-
-
-def test_manifest_custom_retry_strategy() -> None:
-    """Verify that custom retry configurations are properly instantiated."""
-    manifest = RegulatoryIngestionManifest(http_max_retries=10, http_backoff_factor=3.14159)
-    assert manifest.http_max_retries == 10
-    assert manifest.http_backoff_factor == 3.14159

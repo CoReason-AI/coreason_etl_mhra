@@ -1,4 +1,0 @@
-# file: /app/src/coreason_etl_mhra_products/ingestion/pipeline.py
-# hypothesis_version: 6.151.9
-
-[10000, 'Licence Number', 'bronze', 'coreason_id', 'evolve', 'ingestion_ts', 'jsonl', 'merge', 'mhra_products', 'mhra_products_raw', 'raw_data', 'row_index', 'source_file']

@@ -1,4 +1,0 @@
-# file: /app/src/coreason_etl_mhra_products/config.py
-# hypothesis_version: 6.151.9
-
-[0.5, 5432, '.env', '/data/raw/mhra/', 'coreason', 'ignore', 'localhost', 'postgres', 'utf-8']

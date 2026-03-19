@@ -1,4 +1,0 @@
-# file: /app/src/coreason_etl_mhra_products/http_client.py
-# hypothesis_version: 6.151.9
-
-[429, 500, 502, 503, 504, 'GET', 'HEAD', 'OPTIONS', 'http://', 'https://']
