@@ -12,5 +12,5 @@ select
     licence_route,
     authorisation_date,
     status
-from {{ ref('mhra_approved_products') }}
+from {{ ref('coreason_etl_mhra_products_silver_mhra_approved_products') }}
 where status = 'Granted'

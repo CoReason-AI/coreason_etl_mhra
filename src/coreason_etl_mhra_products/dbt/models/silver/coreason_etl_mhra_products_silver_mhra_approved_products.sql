@@ -7,7 +7,7 @@ with raw as (
         coreason_id,
         raw_data,
         md5(raw_data::text) as content_hash
-    from {{ source('bronze', 'mhra_products_raw') }}
+    from {{ source('bronze', 'coreason_etl_mhra_products_bronze_mhra_products_raw') }}
 ),
 
 parsed as (
