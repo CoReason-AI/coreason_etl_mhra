@@ -46,6 +46,8 @@ class RegulatoryIngestionManifest(BaseSettings):
 
     pgport: int = Field(
         default=5432,
+        ge=1,
+        le=65535,
         description="Postgres database port.",
     )
 

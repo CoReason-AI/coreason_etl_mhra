@@ -12,3 +12,5 @@ logger.add(
     level="INFO",
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
 )
+
+__all__ = ["logger"]

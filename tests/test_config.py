@@ -57,3 +57,36 @@ def test_manifest_invalid_types() -> None:
 
     with pytest.raises(ValidationError):
         RegulatoryIngestionManifest(pgport="invalid_port")
+
+
+def test_manifest_port_boundaries() -> None:
+    """Verify that port numbers outside the 1-65535 range are rejected."""
+    # Valid boundaries
+    assert RegulatoryIngestionManifest(pgport=1).pgport == 1
+    assert RegulatoryIngestionManifest(pgport=65535).pgport == 65535
+
+    # Invalid boundaries
+    with pytest.raises(ValidationError) as exc:
+        RegulatoryIngestionManifest(pgport=0)
+    assert "Input should be greater than or equal to 1" in str(exc.value)
+
+    with pytest.raises(ValidationError) as exc:
+        RegulatoryIngestionManifest(pgport=65536)
+    assert "Input should be less than or equal to 65535" in str(exc.value)
+
+
+def test_manifest_secret_str_repr() -> None:
+    """Verify that the secret representation doesn't leak the actual password."""
+    manifest = RegulatoryIngestionManifest(pgpassword="super_secret_db_password_123")
+    repr_str = repr(manifest)
+
+    # Password should be masked
+    assert "super_secret_db_password_123" not in repr_str
+    assert "**********" in repr_str
+
+
+def test_manifest_custom_retry_strategy() -> None:
+    """Verify that custom retry configurations are properly instantiated."""
+    manifest = RegulatoryIngestionManifest(http_max_retries=10, http_backoff_factor=3.14159)
+    assert manifest.http_max_retries == 10
+    assert manifest.http_backoff_factor == 3.14159
