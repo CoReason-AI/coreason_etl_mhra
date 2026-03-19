@@ -159,5 +159,5 @@ def test_get_mhra_resource(mock_dlt_resource: MagicMock, mock_manifest: Regulato
     _ = pipeline._get_mhra_resource(Path("test.csv"))
 
     mock_dlt_resource.assert_called_once_with(
-        name="mhra_products_raw", write_disposition="merge", primary_key="coreason_id"
+        name="coreason_etl_mhra_products_bronze_mhra_products_raw", write_disposition="merge", primary_key="coreason_id"
     )

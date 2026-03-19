@@ -6,5 +6,5 @@ sources:
     database: "{{ env_var('PGDATABASE', 'coreason') }}"
     schema: bronze
     tables:
-      - name: mhra_products_raw
+      - name: coreason_etl_mhra_products_bronze_mhra_products_raw
         description: "Raw JSONB payload containing MHRA approved medicinal products."

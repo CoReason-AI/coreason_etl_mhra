@@ -17,7 +17,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  coreason_etl_mhra:
+  coreason_etl_mhra_products:
     +materialized: view
     silver:
       +materialized: table
