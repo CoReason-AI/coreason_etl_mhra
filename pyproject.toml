@@ -55,7 +55,7 @@ warn_unused_ignores = true
 plugins = ["pydantic.mypy"]
 
 [tool.deptry.per_rule_ignores]
-DEP002 = ["dlt", "polars", "requests", "dbt-postgres", "pydantic"]
+DEP002 = ["dlt", "polars", "requests", "dbt-postgres", "pydantic", "mashumaro"]
 DEP003 = ["urllib3"]
 
 [tool.pytest.ini_options]
