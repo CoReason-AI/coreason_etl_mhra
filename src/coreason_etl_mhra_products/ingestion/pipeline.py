@@ -9,7 +9,7 @@
 # Source Code: https://github.com/CoReason-AI/coreason_etl_mhra_products
 
 """
-Pipeline logic for processing the raw MHRA CSV and yielding it via DLT.
+Pipeline logic for processing the raw MHRA Excel and yielding it via DLT.
 """
 
 import datetime
@@ -37,7 +37,7 @@ def _generate_uuidv5(s: pl.Series) -> pl.Series:
 
 class RegulatoryIngestionPipeline:
     """
-    Manages the reading of raw CSV files, UUID generation via Polars, and
+    Manages the reading of raw Excel files, UUID generation via Polars, and
     loading into the database via DLT.
     """
 
@@ -49,14 +49,14 @@ class RegulatoryIngestionPipeline:
 
     def _process_file(self, file_path: Path) -> Iterator[dict[str, Any]]:
         """
-        Reads the CSV using Polars, generates a UUIDv5 `coreason_id`,
+        Reads the Excel file using Polars, generates a UUIDv5 `coreason_id`,
         and yields each row wrapped in a 'raw_data' dictionary.
         """
         logger.info("Processing file via Polars", file_path=str(file_path))
 
-        # We process the CSV using lazy execution or just read_csv and map_batches
+        # We process the Excel file using read_excel
         # MHRA product file has a "Licence Number" column we use for identity
-        df = pl.read_csv(file_path, infer_schema_length=10000, truncate_ragged_lines=True, ignore_errors=True)
+        df = pl.read_excel(file_path, engine="openpyxl")
 
         if "Licence Number" not in df.columns:
             logger.warning("File is missing 'Licence Number' column. UUID generation might fall back to row index.")

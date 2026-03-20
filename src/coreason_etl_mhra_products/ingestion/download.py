@@ -24,7 +24,7 @@ from coreason_etl_mhra_products.utils.logger import logger
 
 class RegulatoryDownloadTask:
     """
-    Task responsible for fetching the raw CSV payload from the MHRA endpoint
+    Task responsible for fetching the raw Excel payload from the MHRA endpoint
     and securing it to local persistent storage prior to ingestion.
     """
 
@@ -60,7 +60,7 @@ class RegulatoryDownloadTask:
         parsed_url = urlparse(url)
         filename = Path(parsed_url.path).name
         if not filename:
-            filename = "mhra_products.csv"
+            filename = "mhra_products.xlsx"
 
         target_path = download_path / filename
 
