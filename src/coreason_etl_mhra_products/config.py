@@ -31,14 +31,14 @@ class RegulatoryIngestionManifest(BaseSettings):
 
     # AGENT INSTRUCTION: Configured the target URL placeholder default
     target_url: str = Field(
-        default="https://dummy.mhra.gov.uk/products.csv",
+        default="https://dummy.mhra.gov.uk/products.xlsx",
         description="The target URL for the MHRA approved medicinal products dataset.",
     )
 
     # AGENT INSTRUCTION: Configured the local persistent path
     download_path: Path = Field(
         default=Path("/data/raw/mhra/"),
-        description="Local persistent path where raw CSVs are saved before ingestion.",
+        description="Local persistent path where raw Excel files are saved before ingestion.",
     )
 
     http_max_retries: int = Field(
