@@ -44,8 +44,10 @@ def test_generate_uuidv5() -> None:
     assert res[1] == expected_2
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
-def test_process_file_with_licence_number(mock_read_csv: MagicMock, mock_manifest: RegulatoryIngestionManifest) -> None:
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
+def test_process_file_with_licence_number(
+    mock_read_excel: MagicMock, mock_manifest: RegulatoryIngestionManifest
+) -> None:
     """Verify processing when 'Licence Number' is present."""
     mock_df = pl.DataFrame(
         {
@@ -53,15 +55,15 @@ def test_process_file_with_licence_number(mock_read_csv: MagicMock, mock_manifes
             "Product Name": ["Drug A", "Drug B"],
         }
     )
-    mock_read_csv.return_value = mock_df
+    mock_read_excel.return_value = mock_df
 
     pipeline = RegulatoryIngestionPipeline(manifest=mock_manifest)
-    file_path = Path("test_file.csv")
+    file_path = Path("test_file.xlsx")
 
     results = list(pipeline._process_file(file_path))
 
     assert len(results) == 2
-    assert results[0]["source_file"] == "test_file.csv"
+    assert results[0]["source_file"] == "test_file.xlsx"
     assert "ingestion_ts" in results[0]
 
     # Verify UUID generation
@@ -76,9 +78,9 @@ def test_process_file_with_licence_number(mock_read_csv: MagicMock, mock_manifes
     assert results[1]["coreason_id"] == expected_id_2
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
 def test_process_file_without_licence_number(
-    mock_read_csv: MagicMock, mock_manifest: RegulatoryIngestionManifest
+    mock_read_excel: MagicMock, mock_manifest: RegulatoryIngestionManifest
 ) -> None:
     """Verify fallback behavior when 'Licence Number' is missing."""
     mock_df = pl.DataFrame(
@@ -86,15 +88,15 @@ def test_process_file_without_licence_number(
             "Product Name": ["Drug A", "Drug B"],
         }
     )
-    mock_read_csv.return_value = mock_df
+    mock_read_excel.return_value = mock_df
 
     pipeline = RegulatoryIngestionPipeline(manifest=mock_manifest)
-    file_path = Path("test_file.csv")
+    file_path = Path("test_file.xlsx")
 
     results = list(pipeline._process_file(file_path))
 
     assert len(results) == 2
-    assert results[0]["source_file"] == "test_file.csv"
+    assert results[0]["source_file"] == "test_file.xlsx"
 
     # UUID should be based on row_index ("0", "1")
     import uuid
@@ -126,7 +128,7 @@ def test_pipeline_run(
     mock_resource = MagicMock()
     mock_get_resource.return_value = mock_resource
 
-    pipeline.run(Path("test_file.csv"))
+    pipeline.run(Path("test_file.xlsx"))
 
     # Assert DLT pipeline creation
     mock_dlt_pipeline.assert_called_once()
@@ -137,7 +139,7 @@ def test_pipeline_run(
     # we don't assert destination precisely here as it involves secret values, but it's passed
 
     # Assert get_resource call
-    mock_get_resource.assert_called_once_with(Path("test_file.csv"))
+    mock_get_resource.assert_called_once_with(Path("test_file.xlsx"))
 
     # Assert nesting limit is set to 0
     assert mock_resource.max_table_nesting == 0
@@ -156,7 +158,7 @@ def test_get_mhra_resource(mock_dlt_resource: MagicMock, mock_manifest: Regulato
     decorator_mock = MagicMock()
     mock_dlt_resource.return_value = decorator_mock
 
-    _ = pipeline._get_mhra_resource(Path("test.csv"))
+    _ = pipeline._get_mhra_resource(Path("test.xlsx"))
 
     mock_dlt_resource.assert_called_once_with(
         name="coreason_etl_mhra_products_bronze_mhra_products_raw", write_disposition="merge", primary_key="coreason_id"
