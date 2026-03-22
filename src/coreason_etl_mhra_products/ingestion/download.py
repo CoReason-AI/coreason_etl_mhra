@@ -60,7 +60,7 @@ class RegulatoryDownloadTask:
         parsed_url = urlparse(url)
         filename = Path(parsed_url.path).name
         if not filename:
-            filename = "mhra_products.xlsx"
+            filename = "mhra_products.csv"
 
         target_path = download_path / filename
 

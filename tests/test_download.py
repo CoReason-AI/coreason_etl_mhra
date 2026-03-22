@@ -23,7 +23,7 @@ from coreason_etl_mhra_products.ingestion.download import RegulatoryDownloadTask
 def mock_manifest(tmp_path: Path) -> RegulatoryIngestionManifest:
     """Fixture providing a configured manifest pointing to a temporary directory."""
     return RegulatoryIngestionManifest(
-        target_url="https://dummy.mhra.gov.uk/data/products.xlsx",
+        target_url="https://dummy.mhra.gov.uk/data/products.csv",
         download_path=tmp_path / "raw" / "mhra",
     )
 
@@ -52,7 +52,7 @@ def test_successful_download(
     downloaded_path = task.execute()
 
     # Asserts
-    assert downloaded_path.name == "products.xlsx"
+    assert downloaded_path.name == "products.csv"
     assert downloaded_path.parent == mock_manifest.download_path
     assert downloaded_path.exists()
 
@@ -97,7 +97,7 @@ def test_download_fallback_filename(
 
     downloaded_path = task.execute()
 
-    assert downloaded_path.name == "mhra_products.xlsx"
+    assert downloaded_path.name == "mhra_products.csv"
     assert downloaded_path.exists()
 
 

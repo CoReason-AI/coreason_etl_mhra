@@ -31,9 +31,9 @@ def test_generate_uuidv5() -> None:
     assert result[1] == str(uuid.uuid5(NAMESPACE_COREASON, "test2"))
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
-def test_process_file_with_licence_number(mock_read_excel: MagicMock, tmp_path: Path) -> None:
-    """Verifies processing of an Excel file containing a Licence Number column."""
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
+def test_process_file_with_licence_number(mock_read_csv: MagicMock, tmp_path: Path) -> None:
+    """Verifies processing of a CSV file containing a Licence Number column."""
     manifest = RegulatoryIngestionManifest()
     pipeline = RegulatoryIngestionPipeline(manifest)
 
@@ -43,17 +43,24 @@ def test_process_file_with_licence_number(mock_read_excel: MagicMock, tmp_path: 
             "Product Name": ["Aspirin", "Empty Licence"],
         }
     )
-    mock_read_excel.return_value = mock_df
+    mock_read_csv.return_value = mock_df
 
-    excel_path = tmp_path / "test.xlsx"
-    records = list(pipeline._process_file(excel_path))
+    csv_path = tmp_path / "test.csv"
+    records = list(pipeline._process_file(csv_path))
+
+    # Verify pl.read_csv arguments
+    mock_read_csv.assert_called_once_with(
+        csv_path,
+        separator=manifest.csv_delimiter,
+        encoding=manifest.csv_encoding,
+    )
 
     assert len(records) == 2
 
     # First record
     assert "coreason_id" in records[0]
     assert records[0]["coreason_id"] == str(uuid.uuid5(NAMESPACE_COREASON, "PL 12345/0001"))
-    assert records[0]["source_file"] == "test.xlsx"
+    assert records[0]["source_file"] == "test.csv"
     assert "ingestion_ts" in records[0]
     assert records[0]["raw_data"] == {"Licence Number": "PL 12345/0001", "Product Name": "Aspirin"}
 
@@ -62,8 +69,8 @@ def test_process_file_with_licence_number(mock_read_excel: MagicMock, tmp_path: 
     assert records[1]["raw_data"] == {"Licence Number": None, "Product Name": "Empty Licence"}
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
-def test_process_file_without_licence_number(mock_read_excel: MagicMock, tmp_path: Path) -> None:
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
+def test_process_file_without_licence_number(mock_read_csv: MagicMock, tmp_path: Path) -> None:
     """Verifies fallback UUID generation when Licence Number is missing."""
     manifest = RegulatoryIngestionManifest()
     pipeline = RegulatoryIngestionPipeline(manifest)
@@ -74,10 +81,10 @@ def test_process_file_without_licence_number(mock_read_excel: MagicMock, tmp_pat
             "Active Substance": ["Acetylsalicylic acid"],
         }
     )
-    mock_read_excel.return_value = mock_df
+    mock_read_csv.return_value = mock_df
 
-    excel_path = tmp_path / "test.xlsx"
-    records = list(pipeline._process_file(excel_path))
+    csv_path = tmp_path / "test.csv"
+    records = list(pipeline._process_file(csv_path))
 
     assert len(records) == 1
     assert "coreason_id" in records[0]
@@ -86,8 +93,8 @@ def test_process_file_without_licence_number(mock_read_excel: MagicMock, tmp_pat
     assert records[0]["raw_data"] == {"Product Name": "Aspirin", "Active Substance": "Acetylsalicylic acid"}
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
-def test_get_mhra_resource(mock_read_excel: MagicMock, tmp_path: Path) -> None:
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
+def test_get_mhra_resource(mock_read_csv: MagicMock, tmp_path: Path) -> None:
     """Verifies that the DLT resource generates records correctly."""
     manifest = RegulatoryIngestionManifest()
     pipeline = RegulatoryIngestionPipeline(manifest)
@@ -98,11 +105,11 @@ def test_get_mhra_resource(mock_read_excel: MagicMock, tmp_path: Path) -> None:
             "Product Name": ["Aspirin"],
         }
     )
-    mock_read_excel.return_value = mock_df
+    mock_read_csv.return_value = mock_df
 
-    excel_path = tmp_path / "test.xlsx"
+    csv_path = tmp_path / "test.csv"
 
-    resource = pipeline._get_mhra_resource(excel_path)
+    resource = pipeline._get_mhra_resource(csv_path)
     records = list(resource)
 
     assert len(records) == 1
@@ -110,9 +117,9 @@ def test_get_mhra_resource(mock_read_excel: MagicMock, tmp_path: Path) -> None:
     assert records[0]["raw_data"] == {"Licence Number": "PL 12345/0001", "Product Name": "Aspirin"}
 
 
-@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_excel")
+@patch("coreason_etl_mhra_products.ingestion.pipeline.pl.read_csv")
 @patch("coreason_etl_mhra_products.ingestion.pipeline.dlt.pipeline")
-def test_pipeline_run(mock_dlt_pipeline: MagicMock, mock_read_excel: MagicMock, tmp_path: Path) -> None:
+def test_pipeline_run(mock_dlt_pipeline: MagicMock, mock_read_csv: MagicMock, tmp_path: Path) -> None:
     """Verifies that the run method orchestrates DLT correctly."""
     manifest = RegulatoryIngestionManifest()
     pipeline = RegulatoryIngestionPipeline(manifest)
@@ -123,14 +130,14 @@ def test_pipeline_run(mock_dlt_pipeline: MagicMock, mock_read_excel: MagicMock, 
             "Product Name": ["Aspirin"],
         }
     )
-    mock_read_excel.return_value = mock_df
+    mock_read_csv.return_value = mock_df
 
-    excel_path = tmp_path / "test.xlsx"
+    csv_path = tmp_path / "test.csv"
 
     mock_pipeline_instance = MagicMock()
     mock_dlt_pipeline.return_value = mock_pipeline_instance
 
-    pipeline.run(excel_path)
+    pipeline.run(csv_path)
 
     # Ensure DLT pipeline was initialized
     mock_dlt_pipeline.assert_called_once_with(
