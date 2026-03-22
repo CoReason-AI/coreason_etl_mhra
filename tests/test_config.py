@@ -83,3 +83,30 @@ def test_manifest_invalid_types() -> None:
 
     with pytest.raises(ValidationError):
         RegulatoryIngestionManifest(pgport="invalid_port")
+
+
+def test_manifest_csv_edge_cases(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify that the manifest can handle unusual or complex CSV parameters via environment variables."""
+    # Test 1: Tab delimiter and obscure encoding
+    monkeypatch.setenv("CSV_DELIMITER", "\t")
+    monkeypatch.setenv("CSV_ENCODING", "latin1")
+    manifest = RegulatoryIngestionManifest()
+    assert manifest.csv_delimiter == "\t"
+    assert manifest.csv_encoding == "latin1"
+
+    # Test 2: Multi-character delimiter
+    monkeypatch.setenv("CSV_DELIMITER", "||")
+    manifest2 = RegulatoryIngestionManifest()
+    assert manifest2.csv_delimiter == "||"
+
+    # Test 3: Whitespace delimiter (sometimes valid, e.g., single space)
+    monkeypatch.setenv("CSV_DELIMITER", " ")
+    manifest3 = RegulatoryIngestionManifest()
+    assert manifest3.csv_delimiter == " "
+
+    # Test 4: Empty strings (e.g., if a user explicitly unsets an expected string via env var)
+    monkeypatch.setenv("CSV_DELIMITER", "")
+    monkeypatch.setenv("CSV_ENCODING", "")
+    manifest4 = RegulatoryIngestionManifest()
+    assert manifest4.csv_delimiter == ""
+    assert manifest4.csv_encoding == ""
