@@ -14,7 +14,7 @@ Configuration definitions for the MHRA ETL pipeline.
 
 from pathlib import Path
 
-from pydantic import Field, SecretStr
+from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -61,29 +61,9 @@ class RegulatoryIngestionManifest(BaseSettings):
         description="Backoff factor for HTTP client retry intervals.",
     )
 
-    pghost: str = Field(
-        default="localhost",
-        description="Postgres database host.",
-    )
-
-    pgport: int = Field(
-        default=5432,
-        description="Postgres database port.",
-    )
-
-    pguser: str = Field(
-        default="postgres",
-        description="Postgres database user.",
-    )
-
-    pgpassword: SecretStr = Field(
-        default=SecretStr("postgres"),
-        description="Postgres database password.",
-    )
-
-    pgdatabase: str = Field(
-        default="coreason",
-        description="Postgres database name.",
+    pg_dsn: PostgresDsn = Field(
+        default="postgresql://postgres:postgres@localhost:5432/coreason",  # type: ignore[assignment]
+        description="Postgres database connection DSN.",
     )
 
 

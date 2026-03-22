@@ -105,19 +105,10 @@ class RegulatoryIngestionPipeline:
         """
         logger.info("Starting DLT pipeline execution")
 
-        # Build the postgres connection string
-        password = self._manifest.pgpassword.get_secret_value()
-        user = self._manifest.pguser
-        host = self._manifest.pghost
-        port = self._manifest.pgport
-        db = self._manifest.pgdatabase
-
-        credentials = f"postgresql://{user}:{password}@{host}:{port}/{db}"
-
         # Configure dlt pipeline
         pipeline = dlt.pipeline(
             pipeline_name="mhra_products",
-            destination=postgres(credentials),
+            destination=postgres(self._manifest.pg_dsn.unicode_string()),
             dataset_name="bronze",
         )
 
