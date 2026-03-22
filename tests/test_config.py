@@ -20,8 +20,10 @@ from coreason_etl_mhra_products.config import RegulatoryIngestionManifest
 def test_manifest_defaults() -> None:
     """Verify the default values of RegulatoryIngestionManifest."""
     manifest = RegulatoryIngestionManifest()
-    assert manifest.target_url == "https://dummy.mhra.gov.uk/products.xlsx"
+    assert manifest.target_url == "https://dummy.mhra.gov.uk/products.csv"
     assert manifest.download_path == Path("/data/raw/mhra/")
+    assert manifest.csv_delimiter == ","
+    assert manifest.csv_encoding == "utf-8"
     assert manifest.http_max_retries == 3
     assert manifest.http_backoff_factor == 0.5
     assert manifest.pghost == "localhost"
@@ -33,11 +35,13 @@ def test_manifest_defaults() -> None:
 
 def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     """Verify that environment variables can override the manifest configuration."""
-    custom_url = "https://custom.mhra.gov.uk/data.xlsx"
+    custom_url = "https://custom.mhra.gov.uk/data.csv"
     custom_dir = "/custom/data/raw/"
 
     monkeypatch.setenv("TARGET_URL", custom_url)
     monkeypatch.setenv("DOWNLOAD_PATH", custom_dir)
+    monkeypatch.setenv("CSV_DELIMITER", ";")
+    monkeypatch.setenv("CSV_ENCODING", "ascii")
     monkeypatch.setenv("HTTP_MAX_RETRIES", "10")
     monkeypatch.setenv("HTTP_BACKOFF_FACTOR", "2.0")
     monkeypatch.setenv("PGHOST", "db.example.com")
@@ -50,6 +54,8 @@ def test_manifest_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert manifest.target_url == custom_url
     assert manifest.download_path == Path(custom_dir)
+    assert manifest.csv_delimiter == ";"
+    assert manifest.csv_encoding == "ascii"
     assert manifest.http_max_retries == 10
     assert manifest.http_backoff_factor == 2.0
     assert manifest.pghost == "db.example.com"
