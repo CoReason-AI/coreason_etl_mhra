@@ -37,7 +37,7 @@ def _generate_uuidv5(s: pl.Series) -> pl.Series:
 
 class RegulatoryIngestionPipeline:
     """
-    Manages the reading of raw Excel files, UUID generation via Polars, and
+    Manages the reading of raw CSV files, UUID generation via Polars, and
     loading into the database via DLT.
     """
 
@@ -49,14 +49,18 @@ class RegulatoryIngestionPipeline:
 
     def _process_file(self, file_path: Path) -> Iterator[dict[str, Any]]:
         """
-        Reads the Excel file using Polars, generates a UUIDv5 `coreason_id`,
+        Reads the CSV file using Polars, generates a UUIDv5 `coreason_id`,
         and yields each row wrapped in a 'raw_data' dictionary.
         """
         logger.info("Processing file via Polars", file_path=str(file_path))
 
-        # We process the Excel file using read_excel
+        # We process the CSV file using read_csv
         # MHRA product file has a "Licence Number" column we use for identity
-        df = pl.read_excel(file_path, engine="openpyxl")
+        df = pl.read_csv(
+            file_path,
+            separator=self._manifest.csv_delimiter,
+            encoding=self._manifest.csv_encoding,
+        )
 
         if "Licence Number" not in df.columns:
             logger.warning("File is missing 'Licence Number' column. UUID generation might fall back to row index.")
@@ -105,19 +109,10 @@ class RegulatoryIngestionPipeline:
         """
         logger.info("Starting DLT pipeline execution")
 
-        # Build the postgres connection string
-        password = self._manifest.pgpassword.get_secret_value()
-        user = self._manifest.pguser
-        host = self._manifest.pghost
-        port = self._manifest.pgport
-        db = self._manifest.pgdatabase
-
-        credentials = f"postgresql://{user}:{password}@{host}:{port}/{db}"
-
         # Configure dlt pipeline
         pipeline = dlt.pipeline(
             pipeline_name="mhra_products",
-            destination=postgres(credentials),
+            destination=postgres(self._manifest.pg_dsn.unicode_string()),
             dataset_name="bronze",
         )
 

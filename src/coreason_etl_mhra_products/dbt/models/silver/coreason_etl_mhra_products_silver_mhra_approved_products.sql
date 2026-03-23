@@ -5,6 +5,7 @@
 with raw as (
     select
         coreason_id,
+        ingestion_ts,
         raw_data,
         md5(raw_data::text) as content_hash
     from {{ source('bronze', 'coreason_etl_mhra_products_bronze_mhra_products_raw') }}
@@ -13,6 +14,7 @@ with raw as (
 parsed as (
     select
         coreason_id,
+        ingestion_ts,
         content_hash,
         -- Clean Licence Number: strip leading/trailing whitespace
         trim(raw_data->>'Licence Number') as licence_number,
@@ -29,6 +31,13 @@ parsed as (
 
         raw_data->>'Status' as status
     from raw
+),
+
+deduplicated as (
+    select
+        *,
+        row_number() over (partition by licence_number order by ingestion_ts desc) as rn
+    from parsed
 )
 
 select
@@ -41,4 +50,5 @@ select
     licence_route,
     authorisation_date,
     status
-from parsed
+from deduplicated
+where rn = 1

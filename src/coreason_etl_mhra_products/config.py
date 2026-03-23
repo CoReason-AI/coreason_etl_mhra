@@ -14,7 +14,7 @@ Configuration definitions for the MHRA ETL pipeline.
 
 from pathlib import Path
 
-from pydantic import Field, SecretStr
+from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,14 +31,24 @@ class RegulatoryIngestionManifest(BaseSettings):
 
     # AGENT INSTRUCTION: Configured the target URL placeholder default
     target_url: str = Field(
-        default="https://dummy.mhra.gov.uk/products.xlsx",
+        default="https://dummy.mhra.gov.uk/products.csv",
         description="The target URL for the MHRA approved medicinal products dataset.",
     )
 
     # AGENT INSTRUCTION: Configured the local persistent path
     download_path: Path = Field(
         default=Path("/data/raw/mhra/"),
-        description="Local persistent path where raw Excel files are saved before ingestion.",
+        description="Local persistent path where raw CSV files are saved before ingestion.",
+    )
+
+    csv_delimiter: str = Field(
+        default=",",
+        description="The delimiter used in the source CSV file.",
+    )
+
+    csv_encoding: str = Field(
+        default="utf-8",
+        description="The character encoding used in the source CSV file.",
     )
 
     http_max_retries: int = Field(
@@ -51,29 +61,9 @@ class RegulatoryIngestionManifest(BaseSettings):
         description="Backoff factor for HTTP client retry intervals.",
     )
 
-    pghost: str = Field(
-        default="localhost",
-        description="Postgres database host.",
-    )
-
-    pgport: int = Field(
-        default=5432,
-        description="Postgres database port.",
-    )
-
-    pguser: str = Field(
-        default="postgres",
-        description="Postgres database user.",
-    )
-
-    pgpassword: SecretStr = Field(
-        default=SecretStr("postgres"),
-        description="Postgres database password.",
-    )
-
-    pgdatabase: str = Field(
-        default="coreason",
-        description="Postgres database name.",
+    pg_dsn: PostgresDsn = Field(
+        default="postgresql://postgres:postgres@localhost:5432/coreason",  # type: ignore[assignment]
+        description="Postgres database connection DSN.",
     )
 
 

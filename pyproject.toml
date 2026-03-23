@@ -15,7 +15,6 @@ dependencies = [
     "dbt-postgres>=1.10.0",
     "dlt[postgres]>=1.23.0",
     "loguru>=0.7.2",
-    "openpyxl>=3.1.5",
     "polars>=1.39.0",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
@@ -76,7 +75,7 @@ warn_unused_ignores = true
 plugins = ["pydantic.mypy"]
 
 [tool.deptry.per_rule_ignores]
-DEP002 = ["dlt", "polars", "requests", "dbt-postgres", "openpyxl"]
+DEP002 = ["dlt", "polars", "requests", "dbt-postgres"]
 DEP003 = ["urllib3"]
 
 [tool.pytest.ini_options]
